@@ -29,8 +29,9 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/lpr-plus/lpr-plus"
-Issues = "https://github.com/lpr-plus/lpr-plus/issues"
+Homepage = "https://github.com/t3-research/lpr-plus"
+Repository = "https://github.com/t3-research/lpr-plus"
+Issues = "https://github.com/t3-research/lpr-plus/issues"
 
 [project.scripts]
 lpr-plus = "lpr_plus.cli:main"
