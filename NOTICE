@@ -1,0 +1,16 @@
+LPR+ is a wrapper and extension layer for program-reduction experiments. It
+does not redistribute the LPR artifact, Perses, Vulcan, C-Reduce, the LPR
+token counter, or the LPR Docker image as part of the Python package.
+
+External tools used by typical LPR+ workflows include:
+
+- LPR: https://github.com/zhangxiaosa/LPR
+- Perses: https://github.com/uw-pluverse/perses
+- Vulcan: distributed with the LPR artifact
+- C-Reduce: https://github.com/csmith-project/creduce
+- Docker image m492zhan/lpr:latest: distributed externally
+
+Perses is licensed under GPLv3. The local LPR artifact inspected during this
+work did not include an explicit LICENSE file. Users are responsible for
+obtaining and using those external tools under their upstream terms.
+

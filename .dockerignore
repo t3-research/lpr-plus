@@ -1,0 +1,15 @@
+.git
+.env
+.env.local
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+build/
+dist/
+*.egg-info/
+runs/
+local-research/
+external/
+paper-template/
+
