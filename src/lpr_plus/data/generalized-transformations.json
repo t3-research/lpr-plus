@@ -1,0 +1,302 @@
+[
+  {
+    "id": "syntax-node-deletion",
+    "name": "Syntax node deletion",
+    "sourceTools": [
+      "Perses",
+      "C-Reduce"
+    ],
+    "sourceMappings": [
+      {
+        "tool": "Perses",
+        "rawIds": [
+          "perses::deployed::perses_node_with_bfs_delta",
+          "perses::deployed::perses_node_with_dfs_delta",
+          "perses::spar-tree::NodeDeletionTreeEdit"
+        ]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": [
+          "creduce::non-ast::pass_lines::0",
+          "creduce::non-ast::pass_balanced::curly"
+        ]
+      }
+    ],
+    "cAdapter": "Parse C into syntax nodes and try deleting whole declarations, statements, expression subtrees, or initializer members.",
+    "rustAdapter": "Parse Rust into syntax nodes and try deleting items, statements, blocks, match arms, expression subtrees, or attributes when syntax remains valid.",
+    "jsAdapter": "Parse JavaScript into syntax nodes and try deleting declarations, statements, object members, expression subtrees, or imports.",
+    "safetyPredicate": "Accept only candidates that parse, are smaller, and pass the benchmark interestingness command.",
+    "priority": "high"
+  },
+  {
+    "id": "token-window-deletion",
+    "name": "Token or line window deletion",
+    "sourceTools": [
+      "Perses",
+      "C-Reduce",
+      "Vulcan"
+    ],
+    "sourceMappings": [
+      {
+        "tool": "Perses",
+        "rawIds": [
+          "perses::deployed::concurrent_state_token_slicer",
+          "perses::deployed::concurrent_state_line_slicer"
+        ]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": [
+          "creduce::non-ast::pass_clex::rm-toks-1",
+          "creduce::non-ast::pass_lines::1"
+        ]
+      },
+      {
+        "tool": "Vulcan",
+        "rawIds": [
+          "vulcan::LocalExhaustivePatternReducer",
+          "vulcan::TokenEditPattern::DELETE"
+        ]
+      }
+    ],
+    "cAdapter": "Try deleting contiguous C token windows, balanced-token windows, or lines after syntax recovery/formatting.",
+    "rustAdapter": "Try deleting contiguous Rust token or line windows, with rustfmt and the interestingness command as the validator.",
+    "jsAdapter": "Try deleting contiguous JavaScript token or line windows, with parser/formatter validation before oracle execution.",
+    "safetyPredicate": "Reject unparsable candidates and accept only windows whose deletion preserves interestingness and reduces token count.",
+    "priority": "high"
+  },
+  {
+    "id": "subtree-replacement",
+    "name": "Compatible subtree replacement",
+    "sourceTools": [
+      "Perses",
+      "Vulcan",
+      "C-Reduce"
+    ],
+    "sourceMappings": [
+      {
+        "tool": "Perses",
+        "rawIds": [
+          "perses::spar-tree::AnyNodeReplacementTreeEdit",
+          "perses::spar-tree::DescendantHoistingTreeEdit"
+        ]
+      },
+      {
+        "tool": "Vulcan",
+        "rawIds": [
+          "vulcan::SubTreeReplacementReducer"
+        ]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": [
+          "creduce::clang-delta::callexpr-to-value"
+        ]
+      }
+    ],
+    "cAdapter": "Replace a C expression, statement, or declaration subtree with a smaller compatible subtree from the same context.",
+    "rustAdapter": "Replace a Rust expression, item, pattern, or block subtree with a smaller syntactically compatible subtree.",
+    "jsAdapter": "Replace a JavaScript expression, statement, object member, or function body subtree with a smaller compatible subtree.",
+    "safetyPredicate": "The replacement must parse in the target language and pass the oracle; static compatibility checks are advisory only.",
+    "priority": "high"
+  },
+  {
+    "id": "identifier-replacement",
+    "name": "Identifier replacement and renaming",
+    "sourceTools": [
+      "Vulcan",
+      "C-Reduce"
+    ],
+    "sourceMappings": [
+      {
+        "tool": "Vulcan",
+        "rawIds": [
+          "vulcan::IdentifierReplacementReducer"
+        ]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": [
+          "creduce::non-ast::pass_clex::rename-toks"
+        ]
+      }
+    ],
+    "cAdapter": "Consistently replace or shorten identifiers while respecting scope and avoiding reserved keywords.",
+    "rustAdapter": "Consistently replace or shorten identifiers while respecting modules, lifetimes, macros, and raw identifiers.",
+    "jsAdapter": "Consistently replace or shorten local identifiers while avoiding property names and dynamic lookup hazards unless scoped safe.",
+    "safetyPredicate": "Accept only scope-safe replacements that parse and preserve interestingness.",
+    "priority": "medium"
+  },
+  {
+    "id": "literal-simplification",
+    "name": "Literal simplification",
+    "sourceTools": [
+      "C-Reduce",
+      "Perses"
+    ],
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": [
+          "creduce::non-ast::pass_ints::a",
+          "creduce::non-ast::pass_clex::delete-string"
+        ]
+      },
+      {
+        "tool": "Perses",
+        "rawIds": [
+          "perses::pnf::ReplaceStringLiteralWithLexerRuleRefPass"
+        ]
+      }
+    ],
+    "cAdapter": "Shrink integer, floating, character, string, boolean-like, and null pointer literals to smaller representatives.",
+    "rustAdapter": "Shrink numeric, char, string, bool, option-like, and unit literals while respecting suffixes and type inference.",
+    "jsAdapter": "Shrink number, string, boolean, null, undefined, array, and object literals without changing syntax class unexpectedly.",
+    "safetyPredicate": "Literal replacement is accepted only if the candidate parses, is smaller, and keeps the interesting behavior.",
+    "priority": "medium"
+  },
+  {
+    "id": "unused-declaration-removal",
+    "name": "Unused declaration removal",
+    "sourceTools": [
+      "C-Reduce",
+      "Perses"
+    ],
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": [
+          "creduce::clang-delta::remove-unused-var",
+          "creduce::clang-delta::remove-unused-function",
+          "creduce::clang-delta::remove-unused-field"
+        ]
+      },
+      {
+        "tool": "Perses",
+        "rawIds": [
+          "perses::spar-tree::NodeDeletionTreeEdit"
+        ]
+      }
+    ],
+    "cAdapter": "Remove unused variables, functions, parameters, struct fields, enum members, includes, and declarations when references are absent.",
+    "rustAdapter": "Remove unused items, locals, parameters, imports, fields, enum variants, and attributes when references are absent.",
+    "jsAdapter": "Remove unused locals, functions, parameters, imports, object members, and classes when references are absent and dynamic access is not required.",
+    "safetyPredicate": "Static unused analysis may propose candidates, but only oracle-passing smaller programs are accepted.",
+    "priority": "high"
+  },
+  {
+    "id": "copy-constant-propagation",
+    "name": "Copy and constant propagation",
+    "sourceTools": [
+      "C-Reduce",
+      "Perses"
+    ],
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": [
+          "creduce::clang-delta::copy-propagation"
+        ]
+      },
+      {
+        "tool": "Perses",
+        "rawIds": [
+          "perses::latra::CopyPropagation"
+        ]
+      }
+    ],
+    "cAdapter": "Propagate constants or simple aliases through variables, fields, and array accesses, then remove the now-redundant binding.",
+    "rustAdapter": "Propagate immutable constants or simple aliases when ownership, borrow, and type constraints remain valid.",
+    "jsAdapter": "Propagate const/let aliases and literal constants when side effects, hoisting, and temporal-dead-zone behavior are not introduced.",
+    "safetyPredicate": "Only simple side-effect-free bindings are proposed; oracle validation remains the final acceptance gate.",
+    "priority": "high"
+  },
+  {
+    "id": "control-flow-simplification",
+    "name": "Control-flow simplification",
+    "sourceTools": [
+      "C-Reduce",
+      "Perses"
+    ],
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": [
+          "creduce::non-ast::pass_ternary::b",
+          "creduce::non-ast::pass_ternary::c",
+          "creduce::non-ast::pass_peep::c"
+        ]
+      },
+      {
+        "tool": "Perses",
+        "rawIds": [
+          "perses::latra::SimplifyIf"
+        ]
+      }
+    ],
+    "cAdapter": "Simplify if/else branches, ternary expressions, loop wrappers, break-only loops, and unreachable blocks.",
+    "rustAdapter": "Simplify if/else, match arms, loop wrappers, early returns, and unreachable blocks while preserving syntactic validity.",
+    "jsAdapter": "Simplify if/else, conditional expressions, loop wrappers, switch cases, and unreachable blocks with parser validation.",
+    "safetyPredicate": "Branch or loop simplifications must reduce size and pass the interestingness command.",
+    "priority": "high"
+  },
+  {
+    "id": "function-call-simplification",
+    "name": "Function and call simplification",
+    "sourceTools": [
+      "C-Reduce",
+      "Perses"
+    ],
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": [
+          "creduce::clang-delta::simple-inliner",
+          "creduce::clang-delta::replace-callexpr",
+          "creduce::clang-delta::simplify-callexpr"
+        ]
+      },
+      {
+        "tool": "Perses",
+        "rawIds": [
+          "perses::latra::FunctionInlining1Arg",
+          "perses::latra::SimplifyCallExpr"
+        ]
+      }
+    ],
+    "cAdapter": "Inline small functions, replace a call with a return expression or neutral value, or remove unused call scaffolding.",
+    "rustAdapter": "Inline small functions/closures or replace calls with compatible expressions when ownership and type checks survive.",
+    "jsAdapter": "Inline small functions/closures or replace pure calls with compatible expressions when dynamic binding is not required.",
+    "safetyPredicate": "Treat call rewrites as speculative; accept only after parsing and oracle validation.",
+    "priority": "medium"
+  },
+  {
+    "id": "wrapper-flattening",
+    "name": "Wrapper flattening",
+    "sourceTools": [
+      "C-Reduce",
+      "Perses"
+    ],
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": [
+          "creduce::non-ast::pass_balanced::parens-only",
+          "creduce::non-ast::pass_balanced::curly-only"
+        ]
+      },
+      {
+        "tool": "Perses",
+        "rawIds": [
+          "perses::spar-tree::DescendantHoistingTreeEdit"
+        ]
+      }
+    ],
+    "cAdapter": "Remove redundant parentheses, braces, nested blocks, delimiter wrappers, and single-child aggregate wrappers.",
+    "rustAdapter": "Remove redundant parentheses, blocks, nested expressions, and single-child wrappers while respecting expression/block typing.",
+    "jsAdapter": "Remove redundant parentheses, blocks, sequence wrappers, and single-child expression wrappers with parser validation.",
+    "safetyPredicate": "Flattening is accepted only when syntax remains valid, tokens decrease, and the oracle passes.",
+    "priority": "medium"
+  }
+]

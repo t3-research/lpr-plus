@@ -1,0 +1,53 @@
+[
+  {
+    "id": "function_inlining",
+    "name": "Function inlining",
+    "source": "LPR",
+    "promptTemplate": "Given the following {{language}} program, identify a function other than the main function and optimize it out via function inlining. If no applicable function exists, return the original program unchanged.",
+    "cAdapter": "Inline a non-main C function into its call sites when doing so can reduce the program.",
+    "rustAdapter": "Inline a non-main Rust function into simple call sites when ownership and syntax can remain valid.",
+    "jsAdapter": "Inline a JavaScript function into simple call sites when scope and runtime behavior required by the oracle can remain valid.",
+    "safetyPredicate": "Accept only candidates that are smaller by the token counter and pass the interestingness oracle."
+  },
+  {
+    "id": "loop_unrolling",
+    "name": "Loop unrolling",
+    "source": "LPR",
+    "promptTemplate": "Given the following {{language}} program, identify a loop structure and optimize it out via loop unrolling or direct simplification. If no applicable loop exists, return the original program unchanged.",
+    "cAdapter": "Replace a simple C loop with fewer direct statements when the oracle behavior is preserved.",
+    "rustAdapter": "Replace a simple Rust loop with fewer direct statements or a simpler expression when valid.",
+    "jsAdapter": "Replace a simple JavaScript loop with fewer direct statements when valid.",
+    "safetyPredicate": "Accept only candidates that are smaller by the token counter and pass the interestingness oracle."
+  },
+  {
+    "id": "data_type_elimination",
+    "name": "Data type elimination",
+    "source": "LPR",
+    "promptTemplate": "Given the following {{language}} program, identify a redundant programmer-defined data type and substitute every instance with its underlying type. If no redundant data type exists, return the original program unchanged.",
+    "cAdapter": "Remove redundant typedef-like C declarations by replacing uses with the underlying type.",
+    "rustAdapter": "Remove redundant Rust aliases or wrapper types only when syntax and oracle behavior remain valid.",
+    "jsAdapter": "Remove redundant JavaScript type-like scaffolding such as unused constructor/wrapper declarations when valid.",
+    "safetyPredicate": "Accept only candidates that are smaller by the token counter and pass the interestingness oracle."
+  },
+  {
+    "id": "data_type_simplification",
+    "name": "Data type simplification",
+    "source": "LPR",
+    "promptTemplate": "Given the following {{language}} program, identify a complex data type and simplify or decompose it into smaller primary values. If no safe simplification exists, return the original program unchanged.",
+    "cAdapter": "Simplify structs, arrays, pointers, or other complex C data when a smaller valid representation exists.",
+    "rustAdapter": "Simplify structs, tuples, references, or containers when ownership and syntax remain valid.",
+    "jsAdapter": "Simplify arrays, objects, or wrapper values when the oracle behavior remains valid.",
+    "safetyPredicate": "Accept only candidates that are smaller by the token counter and pass the interestingness oracle."
+  },
+  {
+    "id": "variable_elimination",
+    "name": "Variable elimination",
+    "source": "LPR",
+    "promptTemplate": "Given the following {{language}} program, identify an intermediate or unused variable and optimize it out via constant propagation, copy propagation, or deletion. If no applicable variable exists, return the original program unchanged.",
+    "cAdapter": "Remove or propagate unused/intermediate C variables, globals, locals, or parameters.",
+    "rustAdapter": "Remove or propagate unused/intermediate Rust bindings while preserving valid ownership and syntax.",
+    "jsAdapter": "Remove or propagate unused/intermediate JavaScript variables, bindings, or parameters.",
+    "safetyPredicate": "Accept only candidates that are smaller by the token counter and pass the interestingness oracle."
+  }
+]
+

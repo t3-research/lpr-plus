@@ -1,0 +1,626 @@
+[
+  {
+    "id": "delete-statement",
+    "name": "Delete statement",
+    "parentFamily": "syntax-node-deletion",
+    "sourceMappings": [
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::spar-tree::NodeDeletionTreeEdit"]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::non-ast::pass_lines::0"]
+      }
+    ],
+    "cAdapter": "Try deleting one complete C statement, including expression statements, labels, jumps, and compound-statement children.",
+    "rustAdapter": "Try deleting one Rust statement or item statement inside a block while preserving block expression syntax.",
+    "jsAdapter": "Try deleting one JavaScript statement, including expression statements, declarations, returns, throws, and control-flow bodies.",
+    "promptTemplate": "Apply the delete-statement transformation to the {{language}} program. Remove one complete statement if doing so can make the program smaller while keeping the benchmark behavior. Do not remove required syntax scaffolding. If no safe statement deletion is apparent, return the original program unchanged.",
+    "safetyPredicate": "The candidate must parse, be smaller by the token counter, and pass the interestingness oracle.",
+    "priority": "high"
+  },
+  {
+    "id": "delete-declaration",
+    "name": "Delete declaration",
+    "parentFamily": "syntax-node-deletion",
+    "sourceMappings": [
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::spar-tree::NodeDeletionTreeEdit"]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::clang-delta::remove-unused-var"]
+      }
+    ],
+    "cAdapter": "Try deleting one C declaration, definition, typedef, prototype, or local declaration only when remaining references stay valid.",
+    "rustAdapter": "Try deleting one Rust item, local binding, trait item, impl item, type alias, or use item when remaining references stay valid.",
+    "jsAdapter": "Try deleting one JavaScript declaration, function, class, import binding, or local binding when remaining references stay valid.",
+    "promptTemplate": "Apply the delete-declaration transformation to the {{language}} program. Remove one declaration or definition that appears unnecessary for triggering the benchmark behavior. Keep the result complete and syntactically valid. If none is safe, return the original program unchanged.",
+    "safetyPredicate": "Delete only complete declaration syntax; accept only if parser, token counter, and oracle all succeed.",
+    "priority": "high"
+  },
+  {
+    "id": "delete-expression-subtree",
+    "name": "Delete expression subtree",
+    "parentFamily": "syntax-node-deletion",
+    "sourceMappings": [
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::deployed::tree_slicer"]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::non-ast::pass_special::c"]
+      }
+    ],
+    "cAdapter": "Try removing a C expression subtree by deleting an optional initializer, operand, argument, or expression statement when syntax remains valid.",
+    "rustAdapter": "Try removing a Rust expression subtree from an optional initializer, argument, block child, or tail expression when syntax remains valid.",
+    "jsAdapter": "Try removing a JavaScript expression subtree from an optional argument, initializer, array element, object member, or expression statement.",
+    "promptTemplate": "Apply the delete-expression-subtree transformation to the {{language}} program. Remove one expression subtree only if the surrounding syntax remains complete. Prefer optional expressions or whole expression statements. If not applicable, return the original program unchanged.",
+    "safetyPredicate": "The deletion must keep language syntax valid and is accepted only after smaller-token and oracle validation.",
+    "priority": "high"
+  },
+  {
+    "id": "delete-block-member",
+    "name": "Delete block member",
+    "parentFamily": "syntax-node-deletion",
+    "sourceMappings": [
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::deployed::perses_node_with_bfs_delta"]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::non-ast::pass_balanced::curly-inside"]
+      }
+    ],
+    "cAdapter": "Try deleting one member inside a C compound statement, struct initializer, enum body, or declaration list.",
+    "rustAdapter": "Try deleting one member inside a Rust block, item list, match body, impl block, struct literal, or enum body.",
+    "jsAdapter": "Try deleting one member inside a JavaScript block, object literal, class body, array literal, import list, or argument list.",
+    "promptTemplate": "Apply the delete-block-member transformation to the {{language}} program. Remove one member from a block-like or delimiter-delimited region while keeping delimiters and separators valid. If no such member is safely removable, return the original program unchanged.",
+    "safetyPredicate": "The surrounding delimiter structure must remain valid; oracle validation decides final acceptance.",
+    "priority": "high"
+  },
+  {
+    "id": "delete-token-window",
+    "name": "Delete token window",
+    "parentFamily": "token-window-deletion",
+    "sourceMappings": [
+      {
+        "tool": "Vulcan",
+        "rawIds": ["vulcan::TokenEditPattern::DELETE"]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::non-ast::pass_clex::rm-toks-1"]
+      }
+    ],
+    "cAdapter": "Try deleting a short contiguous C token window and repair only the minimal surrounding syntax needed.",
+    "rustAdapter": "Try deleting a short contiguous Rust token window and repair delimiters, separators, or semicolons only if needed.",
+    "jsAdapter": "Try deleting a short contiguous JavaScript token window and repair commas, semicolons, or delimiters only if needed.",
+    "promptTemplate": "Apply the delete-token-window transformation to the {{language}} program. Delete a small contiguous sequence of tokens that appears unnecessary. Make only minimal syntax repairs. If this cannot be done safely, return the original program unchanged.",
+    "safetyPredicate": "The edit must be localized, reduce token count, and pass the benchmark oracle.",
+    "priority": "high"
+  },
+  {
+    "id": "delete-line-window",
+    "name": "Delete line window",
+    "parentFamily": "token-window-deletion",
+    "sourceMappings": [
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::deployed::concurrent_state_line_slicer"]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::non-ast::pass_lines::1"]
+      }
+    ],
+    "cAdapter": "Try deleting one or more adjacent C source lines when they form removable syntax.",
+    "rustAdapter": "Try deleting one or more adjacent Rust source lines when the result remains syntactically complete.",
+    "jsAdapter": "Try deleting one or more adjacent JavaScript source lines when the result remains syntactically complete.",
+    "promptTemplate": "Apply the delete-line-window transformation to the {{language}} program. Delete a short adjacent line range that is likely unnecessary. Preserve valid syntax and return the original program if no line window is safely removable.",
+    "safetyPredicate": "A line-window deletion is accepted only if it reduces tokens and passes the oracle.",
+    "priority": "medium"
+  },
+  {
+    "id": "delete-balanced-region",
+    "name": "Delete balanced region",
+    "parentFamily": "token-window-deletion",
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": [
+          "creduce::non-ast::pass_balanced::curly",
+          "creduce::non-ast::pass_balanced::parens"
+        ]
+      }
+    ],
+    "cAdapter": "Try deleting one balanced C parenthesis, bracket, brace, or angle region when the enclosing construct can survive.",
+    "rustAdapter": "Try deleting one balanced Rust delimiter region while respecting macro calls, block expressions, and generic arguments.",
+    "jsAdapter": "Try deleting one balanced JavaScript delimiter region while respecting call arguments, object literals, arrays, and blocks.",
+    "promptTemplate": "Apply the delete-balanced-region transformation to the {{language}} program. Remove one whole balanced delimiter region only when the enclosing program stays syntactically valid. If not applicable, return the original program unchanged.",
+    "safetyPredicate": "The candidate must keep balanced delimiters, reduce tokens, and pass the oracle.",
+    "priority": "medium"
+  },
+  {
+    "id": "replace-node-with-child",
+    "name": "Replace node with child",
+    "parentFamily": "subtree-replacement",
+    "sourceMappings": [
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::spar-tree::DescendantHoistingTreeEdit"]
+      },
+      {
+        "tool": "Vulcan",
+        "rawIds": ["vulcan::SubTreeReplacementReducer"]
+      }
+    ],
+    "cAdapter": "Replace a C expression, statement, or initializer node with one of its smaller children when the syntactic category remains compatible.",
+    "rustAdapter": "Replace a Rust expression, block, item body, or pattern node with a smaller child when ownership and syntax remain plausible.",
+    "jsAdapter": "Replace a JavaScript expression, statement, object member, or block node with a smaller child when syntax remains compatible.",
+    "promptTemplate": "Apply the replace-node-with-child transformation to the {{language}} program. Hoist one smaller child node to replace its parent when that preserves a complete program. If no compatible child exists, return the original program unchanged.",
+    "safetyPredicate": "The replacement must be syntactically compatible, smaller, and oracle-passing.",
+    "priority": "high"
+  },
+  {
+    "id": "replace-expression-with-subexpression",
+    "name": "Replace expression with subexpression",
+    "parentFamily": "subtree-replacement",
+    "sourceMappings": [
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::spar-tree::DescendantHoistingTreeEdit"]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::non-ast::pass_balanced::parens-inside"]
+      }
+    ],
+    "cAdapter": "Replace a C expression with a smaller operand, argument, initializer element, or parenthesized inner expression.",
+    "rustAdapter": "Replace a Rust expression with a smaller subexpression, block tail, method receiver, or argument when the type context can accept it.",
+    "jsAdapter": "Replace a JavaScript expression with a smaller subexpression, property value, argument, callee receiver, or parenthesized inner expression.",
+    "promptTemplate": "Apply the replace-expression-with-subexpression transformation to the {{language}} program. Replace one expression by a smaller contained expression if it fits the same context. Return the original program if no safe replacement is apparent.",
+    "safetyPredicate": "Accept only candidates that remain parseable, reduce token count, and pass the oracle.",
+    "priority": "high"
+  },
+  {
+    "id": "replace-block-with-statement",
+    "name": "Replace block with statement",
+    "parentFamily": "subtree-replacement",
+    "sourceMappings": [
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::spar-tree::AnyNodeReplacementTreeEdit"]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::non-ast::pass_balanced::curly-inside"]
+      }
+    ],
+    "cAdapter": "Replace a C compound statement or brace-delimited region with one smaller contained statement when allowed.",
+    "rustAdapter": "Replace a Rust block with one contained statement, item, or tail expression when the surrounding context can accept it.",
+    "jsAdapter": "Replace a JavaScript block with one contained statement or expression body when the surrounding context can accept it.",
+    "promptTemplate": "Apply the replace-block-with-statement transformation to the {{language}} program. Replace one block-like region with a single contained member if the surrounding syntax remains valid. Otherwise return the original program unchanged.",
+    "safetyPredicate": "The replacement must preserve the surrounding construct's syntactic requirements and pass oracle validation.",
+    "priority": "medium"
+  },
+  {
+    "id": "rename-local-identifier",
+    "name": "Rename local identifier",
+    "parentFamily": "identifier-replacement",
+    "sourceMappings": [
+      {
+        "tool": "Vulcan",
+        "rawIds": ["vulcan::IdentifierReplacementReducer"]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::non-ast::pass_clex::rename-toks"]
+      }
+    ],
+    "cAdapter": "Rename one local C identifier consistently to a shorter valid identifier without touching keywords or external symbols.",
+    "rustAdapter": "Rename one local Rust identifier consistently to a shorter valid identifier without touching keywords, lifetimes, macros, or public API names.",
+    "jsAdapter": "Rename one local JavaScript identifier consistently to a shorter valid identifier without touching property names or dynamic lookup strings.",
+    "promptTemplate": "Apply the rename-local-identifier transformation to the {{language}} program. Consistently rename one local identifier to a shorter valid name. Avoid changing externally meaningful names or property-string behavior. If unsafe, return the original program unchanged.",
+    "safetyPredicate": "Only scope-consistent renames are valid; parser and oracle checks decide acceptance.",
+    "priority": "medium"
+  },
+  {
+    "id": "replace-identifier-with-compatible-identifier",
+    "name": "Replace identifier with compatible identifier",
+    "parentFamily": "identifier-replacement",
+    "sourceMappings": [
+      {
+        "tool": "Vulcan",
+        "rawIds": ["vulcan::IdentifierReplacementReducer"]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::clang-delta::rename-param"]
+      }
+    ],
+    "cAdapter": "Replace one C identifier use with another in-scope compatible identifier only when binding and type expectations remain plausible.",
+    "rustAdapter": "Replace one Rust identifier use with another compatible in-scope binding while respecting ownership and type expectations.",
+    "jsAdapter": "Replace one JavaScript identifier use with another in-scope binding while avoiding property names and global/environment-sensitive names.",
+    "promptTemplate": "Apply the replace-identifier-with-compatible-identifier transformation to the {{language}} program. Replace one identifier use with a smaller or already existing compatible identifier if this can simplify the program. If no safe replacement exists, return the original program unchanged.",
+    "safetyPredicate": "The replacement must stay in scope, be syntactically valid, smaller or enabling smaller code, and pass the oracle.",
+    "priority": "medium"
+  },
+  {
+    "id": "shrink-integer-literal",
+    "name": "Shrink integer literal",
+    "parentFamily": "literal-simplification",
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": [
+          "creduce::non-ast::pass_ints::a",
+          "creduce::non-ast::pass_ints::b"
+        ]
+      }
+    ],
+    "cAdapter": "Replace a C integer-like literal with a smaller literal such as 0, 1, -1, or a shorter same-base form when type constraints remain plausible.",
+    "rustAdapter": "Replace a Rust integer-like literal with a smaller literal while preserving required suffixes or inferred type constraints.",
+    "jsAdapter": "Replace a JavaScript numeric literal with a smaller number such as 0, 1, or -1 without introducing syntax or runtime hazards.",
+    "promptTemplate": "Apply the shrink-integer-literal transformation to the {{language}} program. Replace one integer or numeric literal with a shorter representative, preserving required type or syntax constraints. Return the original program if no safe literal shrink is apparent.",
+    "safetyPredicate": "The literal shrink must reduce tokens or enable a smaller program and pass oracle validation.",
+    "priority": "medium"
+  },
+  {
+    "id": "shrink-string-literal",
+    "name": "Shrink string literal",
+    "parentFamily": "literal-simplification",
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::non-ast::pass_clex::shorten-string"]
+      },
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::pnf::ReplaceStringLiteralWithLexerRuleRefPass"]
+      }
+    ],
+    "cAdapter": "Shorten a C string or character literal while preserving quoting and escape syntax.",
+    "rustAdapter": "Shorten a Rust string, byte string, char, or raw string literal while preserving valid delimiters and escapes.",
+    "jsAdapter": "Shorten a JavaScript string or template literal only when the syntax and relevant runtime behavior can survive.",
+    "promptTemplate": "Apply the shrink-string-literal transformation to the {{language}} program. Replace one string-like literal with a shorter valid literal. Preserve delimiters and escapes. If unsafe or inapplicable, return the original program unchanged.",
+    "safetyPredicate": "The candidate must remain syntactically valid, smaller, and oracle-passing.",
+    "priority": "medium"
+  },
+  {
+    "id": "simplify-boolean-literal",
+    "name": "Simplify boolean literal",
+    "parentFamily": "literal-simplification",
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::non-ast::pass_ints::a"]
+      },
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::latra::SimplifyIf"]
+      }
+    ],
+    "cAdapter": "Replace boolean-like C expressions or integer truth values with shorter true or false representatives when context permits.",
+    "rustAdapter": "Replace Rust bool literals or simple boolean expressions with true, false, or a shorter equivalent when type context permits.",
+    "jsAdapter": "Replace JavaScript boolean literals or simple boolean expressions with true, false, 0, or 1 only when the context stays safe.",
+    "promptTemplate": "Apply the simplify-boolean-literal transformation to the {{language}} program. Simplify one boolean literal or trivial boolean expression to a shorter valid form. Return the original program if this is not safe.",
+    "safetyPredicate": "The simplification must keep syntax valid and the interestingness oracle passing.",
+    "priority": "medium"
+  },
+  {
+    "id": "replace-null-like-literal",
+    "name": "Replace null-like literal",
+    "parentFamily": "literal-simplification",
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": [
+          "creduce::non-ast::pass_balanced::parens-to-zero",
+          "creduce::non-ast::pass_peep::a"
+        ]
+      }
+    ],
+    "cAdapter": "Replace pointer-like, zero-like, or optional literal expressions with shorter null, zero, or empty representatives where valid.",
+    "rustAdapter": "Replace option-like, unit-like, or placeholder expressions with shorter None, (), false, 0, or empty representatives where valid.",
+    "jsAdapter": "Replace null-like or undefined-like expressions with shorter null, undefined, 0, false, or empty representatives only when safe.",
+    "promptTemplate": "Apply the replace-null-like-literal transformation to the {{language}} program. Replace one null-like, zero-like, unit-like, or placeholder literal with a shorter valid representative for the context. Return the original program if unsure.",
+    "safetyPredicate": "The replacement must be context-compatible, smaller, and oracle-passing.",
+    "priority": "medium"
+  },
+  {
+    "id": "remove-unused-variable",
+    "name": "Remove unused variable",
+    "parentFamily": "unused-declaration-removal",
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::clang-delta::remove-unused-var"]
+      },
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::deployed::hdd"]
+      }
+    ],
+    "cAdapter": "Remove a C local, global, parameter, or temporary variable only when remaining references and declarations stay valid.",
+    "rustAdapter": "Remove a Rust local binding, parameter, or temporary only when ownership, type, and reference constraints remain valid.",
+    "jsAdapter": "Remove a JavaScript local, parameter, or temporary binding only when no remaining references or dynamic effects require it.",
+    "promptTemplate": "Apply the remove-unused-variable transformation to the {{language}} program. Remove one variable, parameter, or temporary binding that appears unused or redundant. If references would break, return the original program unchanged.",
+    "safetyPredicate": "Static unused reasoning is only a proposal; parser, smaller-token, and oracle checks are mandatory.",
+    "priority": "high"
+  },
+  {
+    "id": "remove-unused-function",
+    "name": "Remove unused function",
+    "parentFamily": "unused-declaration-removal",
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::clang-delta::remove-unused-function"]
+      },
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::deployed::hdd"]
+      }
+    ],
+    "cAdapter": "Remove an unused C function, prototype, or static helper when all call sites remain valid.",
+    "rustAdapter": "Remove an unused Rust function, method, trait default, or impl item when all references remain valid.",
+    "jsAdapter": "Remove an unused JavaScript function, method, arrow function binding, or class method when all references remain valid.",
+    "promptTemplate": "Apply the remove-unused-function transformation to the {{language}} program. Delete one function-like definition that appears unnecessary for the interesting behavior. If it is referenced or unsafe to remove, return the original program unchanged.",
+    "safetyPredicate": "Remove only complete function-like constructs; accept only smaller oracle-passing candidates.",
+    "priority": "high"
+  },
+  {
+    "id": "remove-unused-import",
+    "name": "Remove unused import",
+    "parentFamily": "unused-declaration-removal",
+    "sourceMappings": [
+      {
+        "tool": "Perses",
+        "rawIds": [
+          "perses::spar-tree::NodeDeletionTreeEdit",
+          "perses::deployed::tree_slicer"
+        ]
+      }
+    ],
+    "cAdapter": "Remove an unused include-like or externally irrelevant declaration only if the benchmark forbids no required dependency.",
+    "rustAdapter": "Remove an unused use item, extern crate, module import, or path alias when references remain valid.",
+    "jsAdapter": "Remove an unused import, require binding, destructured import member, or module alias when references remain valid.",
+    "promptTemplate": "Apply the remove-unused-import transformation to the {{language}} program. Remove one unused import-like dependency or module binding. Preserve required declarations and return the original program if no safe import removal exists.",
+    "safetyPredicate": "The import-like removal must not break parsing, name resolution required by the oracle, or benchmark behavior.",
+    "priority": "medium"
+  },
+  {
+    "id": "remove-unused-field-or-member",
+    "name": "Remove unused field or member",
+    "parentFamily": "unused-declaration-removal",
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": [
+          "creduce::clang-delta::remove-unused-field",
+          "creduce::clang-delta::remove-unused-enum-member"
+        ]
+      }
+    ],
+    "cAdapter": "Remove an unused struct field, union field, enum member, initializer member, or aggregate member.",
+    "rustAdapter": "Remove an unused struct field, enum variant, match arm member, associated item, or initializer member when references remain valid.",
+    "jsAdapter": "Remove an unused object property, class field, destructured member, array element, or literal member only when dynamic access is not required.",
+    "promptTemplate": "Apply the remove-unused-field-or-member transformation to the {{language}} program. Remove one unused field, member, property, enum-like member, or literal member while preserving valid surrounding syntax. If unsafe, return the original program unchanged.",
+    "safetyPredicate": "Avoid dynamic property or reflective hazards; oracle validation is the final gate.",
+    "priority": "high"
+  },
+  {
+    "id": "copy-propagation",
+    "name": "Copy propagation",
+    "parentFamily": "copy-constant-propagation",
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::clang-delta::copy-propagation"]
+      },
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::latra::CopyPropagation"]
+      }
+    ],
+    "cAdapter": "Replace uses of a C variable that is a simple copy of another side-effect-free value, then remove the redundant binding if possible.",
+    "rustAdapter": "Replace uses of a Rust immutable binding that is a simple alias while respecting move, borrow, and lifetime constraints.",
+    "jsAdapter": "Replace uses of a JavaScript const or side-effect-free let alias while respecting hoisting and temporal dead zone behavior.",
+    "promptTemplate": "Apply the copy-propagation transformation to the {{language}} program. Inline one simple alias into its uses and remove the alias if possible. Avoid expressions with side effects. If unsafe, return the original program unchanged.",
+    "safetyPredicate": "Only side-effect-free aliases are eligible, and the final candidate must pass the oracle.",
+    "priority": "high"
+  },
+  {
+    "id": "constant-propagation",
+    "name": "Constant propagation",
+    "parentFamily": "copy-constant-propagation",
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::clang-delta::copy-propagation"]
+      },
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::latra::CopyPropagation"]
+      }
+    ],
+    "cAdapter": "Replace uses of a C constant binding or literal-only initializer with the literal, then remove the redundant binding when possible.",
+    "rustAdapter": "Replace uses of a Rust immutable constant or literal binding with the literal while respecting type inference and ownership constraints.",
+    "jsAdapter": "Replace uses of a JavaScript const or literal-only binding with the literal while avoiding side effects and temporal-dead-zone changes.",
+    "promptTemplate": "Apply the constant-propagation transformation to the {{language}} program. Inline one simple literal or constant binding into its uses and remove redundant code if possible. If unsafe, return the original program unchanged.",
+    "safetyPredicate": "The propagated expression must be side-effect-free, smaller overall, and oracle-passing.",
+    "priority": "high"
+  },
+  {
+    "id": "inline-single-use-binding",
+    "name": "Inline single-use binding",
+    "parentFamily": "copy-constant-propagation",
+    "sourceMappings": [
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::pnf::InlineSingleUseAltRulePass"]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::clang-delta::copy-propagation"]
+      }
+    ],
+    "cAdapter": "Inline a C variable or simple helper binding used exactly once and delete its declaration if this shortens the program.",
+    "rustAdapter": "Inline a Rust let binding or small expression binding used exactly once when ownership and evaluation order remain safe.",
+    "jsAdapter": "Inline a JavaScript const or let binding used exactly once when evaluation order and side effects remain safe.",
+    "promptTemplate": "Apply the inline-single-use-binding transformation to the {{language}} program. Inline one single-use binding into its only use and delete the binding if the result is smaller. Return the original program if this is not safe.",
+    "safetyPredicate": "The inlined expression must be side-effect-free or preserve evaluation order, and the candidate must pass the oracle.",
+    "priority": "high"
+  },
+  {
+    "id": "simplify-if-then-branch",
+    "name": "Simplify if then branch",
+    "parentFamily": "control-flow-simplification",
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::clang-delta::simplify-if"]
+      },
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::latra::SimplifyIf"]
+      }
+    ],
+    "cAdapter": "Simplify a C if statement by keeping or shortening the then branch when the condition or other branch is unnecessary.",
+    "rustAdapter": "Simplify a Rust if expression or statement by keeping or shortening the then branch while preserving expression typing.",
+    "jsAdapter": "Simplify a JavaScript if statement or conditional by keeping or shortening the then branch when safe.",
+    "promptTemplate": "Apply the simplify-if-then-branch transformation to the {{language}} program. Simplify one conditional by retaining, shortening, or exposing its then branch if that keeps the interesting behavior. If unsafe, return the original program unchanged.",
+    "safetyPredicate": "The transformed control flow must parse, reduce tokens, and pass the oracle.",
+    "priority": "high"
+  },
+  {
+    "id": "simplify-if-else-branch",
+    "name": "Simplify if else branch",
+    "parentFamily": "control-flow-simplification",
+    "sourceMappings": [
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::latra::SimplifyIf2"]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::clang-delta::simplify-if"]
+      }
+    ],
+    "cAdapter": "Simplify a C if or conditional operator by keeping or shortening the else branch when the condition or then branch is unnecessary.",
+    "rustAdapter": "Simplify a Rust if expression by keeping or shortening the else branch while preserving required expression typing.",
+    "jsAdapter": "Simplify a JavaScript if statement or conditional expression by keeping or shortening the else branch when safe.",
+    "promptTemplate": "Apply the simplify-if-else-branch transformation to the {{language}} program. Simplify one conditional by retaining, shortening, or exposing its else branch if that keeps the interesting behavior. If unsafe, return the original program unchanged.",
+    "safetyPredicate": "The control-flow rewrite must be syntactically valid, smaller, and oracle-passing.",
+    "priority": "high"
+  },
+  {
+    "id": "remove-unreachable-branch",
+    "name": "Remove unreachable branch",
+    "parentFamily": "control-flow-simplification",
+    "sourceMappings": [
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::pnf::EliminateUnreachableRulePass"]
+      },
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::non-ast::pass_ternary::b"]
+      }
+    ],
+    "cAdapter": "Remove a C branch or conditional arm that is unreachable or irrelevant under a constant-like condition.",
+    "rustAdapter": "Remove a Rust branch, match arm, or conditional arm that is unreachable or irrelevant under a constant-like condition.",
+    "jsAdapter": "Remove a JavaScript branch, conditional arm, or dead control-flow arm that is unreachable or irrelevant under a constant-like condition.",
+    "promptTemplate": "Apply the remove-unreachable-branch transformation to the {{language}} program. Remove one branch that appears unreachable, dead, or irrelevant to the interesting behavior. Return the original program if this cannot be determined safely.",
+    "safetyPredicate": "The edit must preserve required control-flow syntax and pass the oracle.",
+    "priority": "medium"
+  },
+  {
+    "id": "flatten-loop-wrapper",
+    "name": "Flatten loop wrapper",
+    "parentFamily": "control-flow-simplification",
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::peephole::pass_peep::c::loop-wrapper"]
+      },
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::deployed::tree_slicer"]
+      }
+    ],
+    "cAdapter": "Replace a C loop wrapper with its body or a simpler statement when iteration is unnecessary for the oracle.",
+    "rustAdapter": "Replace a Rust loop, while, for, or iterator wrapper with its body or a simpler expression when iteration is unnecessary.",
+    "jsAdapter": "Replace a JavaScript loop wrapper with its body or a simpler statement when iteration is unnecessary for the oracle.",
+    "promptTemplate": "Apply the flatten-loop-wrapper transformation to the {{language}} program. Remove or flatten one loop wrapper while preserving the body needed for interesting behavior. If flattening is unsafe, return the original program unchanged.",
+    "safetyPredicate": "The loop flattening must not introduce invalid control-flow statements and must pass the oracle.",
+    "priority": "medium"
+  },
+  {
+    "id": "inline-small-function",
+    "name": "Inline small function",
+    "parentFamily": "function-call-simplification",
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::clang-delta::simple-inliner"]
+      },
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::pnf::InlineFragmentPass"]
+      }
+    ],
+    "cAdapter": "Inline one small C helper function or function-like expression at a call site and remove the definition if unused.",
+    "rustAdapter": "Inline one small Rust function, method, closure, or trait default at a call site when ownership and type constraints remain valid.",
+    "jsAdapter": "Inline one small JavaScript function, method, or arrow function at a call site when this binding and side effects remain safe.",
+    "promptTemplate": "Apply the inline-small-function transformation to the {{language}} program. Inline one small function-like body at a call site and remove the original definition if it becomes unnecessary. If unsafe, return the original program unchanged.",
+    "safetyPredicate": "Inlining must preserve evaluation order and binding semantics, reduce tokens, and pass the oracle.",
+    "priority": "high"
+  },
+  {
+    "id": "replace-call-with-return-expression",
+    "name": "Replace call with return expression",
+    "parentFamily": "function-call-simplification",
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": ["creduce::clang-delta::replace-callexpr"]
+      },
+      {
+        "tool": "Perses",
+        "rawIds": ["perses::latra::CallExprToValue"]
+      }
+    ],
+    "cAdapter": "Replace a C call expression with a known return value, argument, receiver, or simpler compatible expression.",
+    "rustAdapter": "Replace a Rust call or method call with a known return expression, receiver, argument, or simpler compatible expression.",
+    "jsAdapter": "Replace a JavaScript call or method call with a known return expression, receiver, argument, or simpler compatible expression.",
+    "promptTemplate": "Apply the replace-call-with-return-expression transformation to the {{language}} program. Replace one function or method call with a smaller compatible expression that could stand for its result. If no safe replacement exists, return the original program unchanged.",
+    "safetyPredicate": "The replacement must fit the expression context, avoid unsafe side-effect removal, and pass the oracle.",
+    "priority": "high"
+  },
+  {
+    "id": "remove-redundant-parentheses",
+    "name": "Remove redundant parentheses",
+    "parentFamily": "wrapper-flattening",
+    "sourceMappings": [
+      {
+        "tool": "C-Reduce",
+        "rawIds": [
+          "creduce::non-ast::pass_balanced::parens",
+          "creduce::peephole::pass_peep::a::direct-rule-01"
+        ]
+      }
+    ],
+    "cAdapter": "Remove redundant C parentheses, braces, or delimiter wrappers only when precedence and syntax remain valid.",
+    "rustAdapter": "Remove redundant Rust parentheses, braces, or delimiter wrappers while respecting block-expression and macro syntax.",
+    "jsAdapter": "Remove redundant JavaScript parentheses, braces, or delimiter wrappers while preserving precedence and expression-vs-statement syntax.",
+    "promptTemplate": "Apply the remove-redundant-parentheses transformation to the {{language}} program. Remove one redundant wrapper such as parentheses or an unnecessary delimiter pair while preserving meaning needed by the oracle. If unsafe, return the original program unchanged.",
+    "safetyPredicate": "Wrapper removal must keep parse structure valid enough for the oracle and reduce token count.",
+    "priority": "medium"
+  }
+]
